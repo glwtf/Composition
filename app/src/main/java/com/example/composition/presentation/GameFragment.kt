@@ -5,40 +5,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.composition.R
+import com.example.composition.databinding.FragmentGameBinding
 
 class GameFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(Companion.ARG_PARAM1)
-            param2 = it.getString(Companion.ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentGameBinding? = null
+    private val binding: FragmentGameBinding
+    get() = _binding ?: throw java.lang.RuntimeException("FragmentGameBinding == null")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_game, container, false)
+    ): View {
+        _binding = FragmentGameBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GameFragment().apply {
-                arguments = Bundle().apply {
-                    putString(Companion.ARG_PARAM1, param1)
-                    putString(Companion.ARG_PARAM2, param2)
-                }
-            }
-
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
+
 }
