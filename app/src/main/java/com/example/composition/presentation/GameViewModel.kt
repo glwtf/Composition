@@ -35,27 +35,27 @@ class GameViewModel(application : Application) : AndroidViewModel(application) {
         get() = _question
 
     private val _percentOfRightAnswers = MutableLiveData<Int>()
-    private val percentOfRightAnswers : LiveData<Int>
+    val percentOfRightAnswers : LiveData<Int>
         get() = _percentOfRightAnswers
 
     private val _progressAnswers = MutableLiveData<String>()
-    private val progressAnswers : LiveData<String>
+    val progressAnswers : LiveData<String>
         get() = _progressAnswers
 
     private val _enoughCount = MutableLiveData<Boolean>()
-    private val enoughCount : LiveData<Boolean>
+    val enoughCount : LiveData<Boolean>
         get() = _enoughCount
 
     private val _enoughPercent = MutableLiveData<Boolean>()
-    private val enoughPercent : LiveData<Boolean>
+    val enoughPercent : LiveData<Boolean>
         get() = _enoughPercent
 
     private val _minPercent = MutableLiveData<Int>()
-    private val minPercent : LiveData<Int>
+    val minPercent : LiveData<Int>
         get() = _minPercent
 
     private val _gameResult = MutableLiveData<GameResult>()
-    private val gameResult : LiveData<GameResult>
+    val gameResult : LiveData<GameResult>
         get() = _gameResult
 
     private var timer : CountDownTimer? = null
@@ -66,6 +66,7 @@ class GameViewModel(application : Application) : AndroidViewModel(application) {
         getGameSettings(level)
         startTimer()
         generateQuestion()
+        updateProgress()
     }
 
     fun chooseAnswer(number : Int) {
@@ -86,8 +87,11 @@ class GameViewModel(application : Application) : AndroidViewModel(application) {
         _enoughPercent.value = percent >= gameSettings.minPercentOfRightAnswers
     }
 
-    private fun calculatePercentOfRightAnswers()
-        = ((countOfRightAnswer / countOfQuestions.toDouble()) * 100).toInt()
+    private fun calculatePercentOfRightAnswers() : Int {
+        if (countOfQuestions == 0)
+            return 0
+        return ((countOfRightAnswer / countOfQuestions.toDouble()) * 100).toInt()
+    }
 
     private fun checkAnswer(number : Int) {
         val rightAnswer = question.value?.rightAnswer
