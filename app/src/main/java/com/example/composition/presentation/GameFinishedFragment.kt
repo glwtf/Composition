@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
+import com.example.composition.R
 import com.example.composition.databinding.FragmentGameFinishedBinding
 import com.example.composition.domain.entity.GameResult
 
@@ -33,6 +34,7 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setBinding()
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 retryGame()
@@ -48,6 +50,42 @@ class GameFinishedFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun setBinding() {
+        with(binding) {
+            tvRequiredAnswers.text = String.format(
+                getString(R.string.required_score),
+                result.gameSettings.minCountOfRightAnswers
+            )
+            tvScoreAnswers.text = String.format(
+                getString(R.string.score_answers),
+                result.countOfRightAnswers
+            )
+            tvRequiredPercentage.text = String.format(
+                getString(R.string.required_percentage),
+                result.gameSettings.minPercentOfRightAnswers
+            )
+            tvRequiredPercentage.text = String.format(
+                getString(R.string.required_percentage),
+                result.gameSettings.minPercentOfRightAnswers
+            )
+            tvScorePercentage.text = String.format(
+                getString(R.string.score_percentage),
+                calculatePercentOfRightAnswers()
+            )
+            emojiResult.setImageResource(getImageId())
+        }
+    }
+
+    private fun getImageId()
+        = when (result.winner) {
+            true -> R.drawable.ic_smile
+            false -> R.drawable.ic_sad
+        }
+
+    private fun calculatePercentOfRightAnswers()
+    = if (result.countOfQuestions == 0) 0
+    else ((result.countOfRightAnswers / result.countOfQuestions.toDouble()) * 100).toInt()
 
     private fun parseArgs() {
         result = requireArguments().getSerializable(KET_GAME_RESULT) as GameResult
