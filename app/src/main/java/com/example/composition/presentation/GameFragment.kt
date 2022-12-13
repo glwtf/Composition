@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.*
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.composition.R
 import com.example.composition.databinding.FragmentGameBinding
 import com.example.composition.domain.entity.GameResult
@@ -17,11 +19,12 @@ import com.example.composition.domain.entity.Level
 
 class GameFragment : Fragment() {
 
-    private lateinit var level : Level
+    private val args by navArgs<GameFragmentArgs>()
+
     private val viewModel : GameViewModel by lazy {
         ViewModelProvider(
             this,
-            GameViewModelFactory(level, requireActivity().application)
+            GameViewModelFactory(args.level, requireActivity().application)
         )[GameViewModel::class.java]
     }
 
@@ -39,11 +42,6 @@ class GameFragment : Fragment() {
     private var _binding: FragmentGameBinding? = null
     private val binding: FragmentGameBinding
     get() = _binding ?: throw java.lang.RuntimeException("FragmentGameBinding == null")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parsArgs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -113,26 +111,10 @@ class GameFragment : Fragment() {
         return ContextCompat.getColor(requireContext(), colorId)
     }
 
-    private fun parsArgs() {
-        level = requireArguments().getSerializable(KEY_LEVEL) as Level
-    }
-
     private fun launchGameFinishedFragment(result: GameResult) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFinishedFragment.newInstance(result))
-            .addToBackStack(GameFinishedFragment.FRAGMENT_NAME)
-            .commit()
-    }
-
-    companion object {
-        const val FRAGMENT_NAME = "GameFragment"
-        private const val KEY_LEVEL = "level"
-
-        fun newInstance(level: Level) = GameFragment().apply {
-            arguments = Bundle().apply {
-                putSerializable(KEY_LEVEL, level)
-            }
-        }
+        findNavController().navigate(
+            GameFragmentDirections.actionGameFragmentToGameFinishedFragment(result)
+        )
     }
 
 }
