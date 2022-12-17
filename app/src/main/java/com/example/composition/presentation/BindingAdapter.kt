@@ -1,10 +1,18 @@
 package com.example.composition.presentation
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.example.composition.R
 import com.example.composition.domain.entity.GameResult
+
+interface OnOptionClickListener {
+    fun onOptionClickListener(option: Int)
+}
 
 @BindingAdapter("requiredAnswers")
 fun bindRequiredAnswers(textView: TextView, count : Int) {
@@ -48,4 +56,41 @@ fun bindEmoji(imageView: ImageView, winner: Boolean, ) {
        false -> R.drawable.ic_sad
    }
    imageView.setImageResource(resourceId)
+}
+
+@BindingAdapter("progressBar")
+fun bindProgressBar(progressBar: ProgressBar, percent: Int){
+    progressBar.setProgress(percent, true)
+}
+
+@BindingAdapter("enoughCount")
+fun bindEnoughCount(textView: TextView, state : Boolean) {
+    val color = getColorByState(textView.context, state)
+    textView.setTextColor(color)
+}
+
+@BindingAdapter("enoughPercent")
+fun bindEnoughPercent(progressBar: ProgressBar, state : Boolean) {
+    val color = getColorByState(progressBar.context, state)
+    progressBar.progressTintList = ColorStateList.valueOf(color)
+}
+
+private fun getColorByState(context : Context, state : Boolean) : Int {
+    val colorId = when (state) {
+        true -> R.color.green
+        false -> R.color.red
+    }
+    return ContextCompat.getColor(context, colorId)
+}
+
+@BindingAdapter("numberAsText")
+fun bindNumberAsText(textView: TextView, number : Int) {
+    textView.text = number.toString()
+}
+
+@BindingAdapter("onOptionClickListener")
+fun bindOnOptionClickListener(textView: TextView, clickable: OnOptionClickListener) {
+    textView.setOnClickListener {
+        clickable.onOptionClickListener(textView.text.toString().toInt())
+    }
 }
