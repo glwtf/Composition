@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.*
 import androidx.navigation.fragment.findNavController
@@ -16,16 +17,18 @@ import com.example.composition.R
 import com.example.composition.databinding.FragmentGameBinding
 import com.example.composition.domain.entity.GameResult
 import com.example.composition.domain.entity.Level
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class GameFragment : Fragment() {
 
     private val args by navArgs<GameFragmentArgs>()
 
-    private val viewModel : GameViewModel by lazy {
-        ViewModelProvider(
-            this,
-            GameViewModelFactory(args.level, requireActivity().application)
-        )[GameViewModel::class.java]
+    @Inject
+    lateinit var factory: GameViewModel.Factory
+    private val viewModel: GameViewModel by viewModels {
+        GameViewModel.provideFactory(factory, args.level)
     }
 
     private var _binding: FragmentGameBinding? = null

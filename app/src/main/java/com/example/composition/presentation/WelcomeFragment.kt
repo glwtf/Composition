@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.composition.R
 import com.example.composition.databinding.FragmentWelcomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 class WelcomeFragment : Fragment() {
 
