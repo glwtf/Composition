@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.composition.R
 import com.example.composition.data.GameRepositoryImpl
 import com.example.composition.domain.entity.GameResult
@@ -13,18 +14,20 @@ import com.example.composition.domain.entity.Level
 import com.example.composition.domain.entity.Question
 import com.example.composition.domain.usecase.GenerateQuestionUseCase
 import com.example.composition.domain.usecase.GetGameSettingsUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class GameViewModel(
-    private  val application : Application,
-    private val level: Level
+class GameViewModel @AssistedInject constructor(
+    private  val application: Application,
+    @Assisted private val level: Level,
+    private val generateQuestionUseCase: GenerateQuestionUseCase,
+    private val getGameSettingsUseCase: GetGameSettingsUseCase,
     ) : ViewModel() {
 
     private lateinit var gameSettings: GameSettings
-
-    private val repository = GameRepositoryImpl
-
-    private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-    private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
 
     private val _formattedTime = MutableLiveData<String>()
     val formattedTime : LiveData<String>
@@ -147,14 +150,27 @@ class GameViewModel(
         )
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun create(level:Level): GameViewModel
+    }
+
     override fun onCleared() {
         super.onCleared()
         timer?.cancel()
     }
 
     companion object {
-
         private const val MILLIS_IN_SECONDS = 1000L
         private const val SECONDS_IN_MINUTES = 60
+
+        fun provideFactory(
+            factory: Factory,
+            level: Level
+        ) : ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return factory.create(level) as T
+            }
+        }
     }
 }

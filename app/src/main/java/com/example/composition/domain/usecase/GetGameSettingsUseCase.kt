@@ -2,8 +2,9 @@ package com.example.composition.domain.usecase
 
 import com.example.composition.domain.entity.Level
 import com.example.composition.domain.repository.GameRepository
+import javax.inject.Inject
 
-class GetGameSettingsUseCase(private val repository: GameRepository) {
+class GetGameSettingsUseCase @Inject constructor(private val repository: GameRepository) {
 
     operator fun invoke(level: Level)
     = repository.generateGameSettings(level)
